@@ -8,20 +8,29 @@ int v = 3;
 
 void *add100(void * n) {
   v = v+100;
-  printf("%d\n", v);
+  pthread_exit(NULL);
 }
 
 int main (int argc, void * argv[]) {
   int n = atoi(argv[1]);
   pthread_t threads[n];
   int t[n];
-  int rc;
+  int rc = 0;
+  void *status;
 
-  for (unsigned i = 0 ; i < n ; i++){
+  for (unsigned i = 0 ; i < n && rc == 0; i++){
     t[i] = i;
     rc = pthread_create(&threads[i], NULL, add100, &t[i]);
+    printf("%d --- %d\n", i, v);
   }
 
-  pthread_exit(NULL);
+  for (unsigned h = 0 ; h < n ; h++) {
+    rc = pthread_join(threads[h], &status);
+    if (rc != 0) {
+      printf("ERROR pthread_join() is %d\n", rc);
+      exit(-1);
+    }
+    printf("Fin thread %d estado: %ld\n", h, (long)status);
+  }
   return 0;
 }

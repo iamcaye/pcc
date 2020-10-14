@@ -15,12 +15,13 @@ void *func() {
 }
 
 void *getter(void * th){
-  pthread_t thread = (pthread_t *)&th;
+  pthread_t thread = (pthread_t)th;
   int rc;
   char *buff;
-  rc = pthread_getname_np(thread, buff, TAM);
+  rc = pthread_getname_np(&thread, buff, TAM);
   if(rc != 0){
-    perror("pthread_create 1");
+    perror("pthread_getname");
+    exit(0);
   }
   printf("---- %s\t", buff);
 }
@@ -38,6 +39,7 @@ int main (int argc, void * argv[]) {
   rc = pthread_create(&threads[0], NULL, func, &t[0]);
   if(rc != 0){
     perror("pthread_create 0");
+    exit(0);
   }
 
   for (unsigned i = 0 ; i < 100 ; i++) {
@@ -45,13 +47,16 @@ int main (int argc, void * argv[]) {
     rc = pthread_setname_np(threads[0], n);
     if(rc != 0){
       perror("pthread_setname 1");
+      exit(0);
     }
 
     rc = pthread_create(&threads[1], NULL, getter, (void *)&threads[0]);
     if(rc != 0){
-      perror("pthread_getname 1");
+      perror("pthread_create 1");
+      exit(0);
     }
   }
 
+  pthread_exit(NULL);
   return 0;
 }
