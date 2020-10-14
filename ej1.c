@@ -13,9 +13,8 @@ struct arg_struct{
 void *printChar (void * argum){
   struct arg_struct *args = (struct arg_struct *)argum;
   for (unsigned j = 0 ; j < args -> n ; j++) {
-    printf("%s\t", args -> c);
+    printf("%s\n", args -> c);
   }
-  printf("\n");
 }
 
 int main (int argc, void * argv[]) {
