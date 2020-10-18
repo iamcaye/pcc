@@ -3,60 +3,53 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define TAM 128
-
-struct st_args {
-  pthread_t t;
-  char * buff;
-};
-
-void *func() {
-  sleep(2);
-}
-
-void *getter(void * th){
-  pthread_t thread = (pthread_t)th;
-  int rc;
-  char *buff;
-  rc = pthread_getname_np(&thread, buff, TAM);
-  if(rc != 0){
-    perror("pthread_getname");
-    exit(0);
-  }
-  printf("---- %s\t", buff);
-}
-
+#define NTHREADS 2
 int v = 0;
 
-int main (int argc, void * argv[]) {
-  pthread_t threads[2];
-  char buff[TAM];
-  char n[TAM];
-  int t[2];
-  int rc;
-  struct st_args args[100];
+void *add100(void * n) {
+  for(unsigned i = 0 ; i < 100 ; i++){
+    v++;
+  }
+}
 
-  rc = pthread_create(&threads[0], NULL, func, &t[0]);
-  if(rc != 0){
-    perror("pthread_create 0");
-    exit(0);
+void *show(){
+  printf("El valor de v es %d\n", v);
+}
+
+int main (int argc, char * argv[]) {
+  int n = atoi(argv[1]);
+  pthread_t threads[NTHREADS];
+  int t1[n];
+  int t2[n];
+  int rc = 0;
+  void *status;
+
+  for (unsigned i = 0 ; i < n && rc == 0; i++){
+    t1[i] = i;
+    t2[i] = i;
+    rc = pthread_create(&threads[0], NULL, add100, &t1[i]);
+    if (rc != 0) {
+      printf("ERROR pthread_creeate 0 is %d\n", rc);
+      exit(-1);
+    }
+    rc = pthread_create(&threads[1], NULL, show, &t2[i]);
+    if (rc != 0) {
+      printf("ERROR pthread_create 1 is %d\n", rc);
+      exit(-1);
+    }
   }
 
-  for (unsigned i = 0 ; i < 100 ; i++) {
-    sprintf(n, "%d", i);
-    rc = pthread_setname_np(threads[0], n);
-    if(rc != 0){
-      perror("pthread_setname 1");
-      exit(0);
+  for (unsigned h = 0 ; h < NTHREADS ; h++) {
+    rc = pthread_join(threads[h], &status);
+    if (rc != 0) {
+      printf("ERROR pthread_join() is %d\n", rc);
+      exit(-1);
     }
-
-    rc = pthread_create(&threads[1], NULL, getter, (void *)&threads[0]);
-    if(rc != 0){
-      perror("pthread_create 1");
-      exit(0);
-    }
+    printf("Fin thread %d estado: %ld\n", h, (long)status);
   }
 
-  pthread_exit(NULL);
+  printf("%d\n", v);
+  fflush(stdout);
+
   return 0;
 }

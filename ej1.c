@@ -7,17 +7,17 @@
 
 struct arg_struct{
   int n;
-  char *c;
+  char c;
 };
 
 void *printChar (void * argum){
   struct arg_struct *args = (struct arg_struct *)argum;
   for (unsigned j = 0 ; j < args -> n ; j++) {
-    printf("%s\n", args -> c);
+    printf("%c", args -> c);
   }
 }
 
-int main (int argc, void * argv[]) {
+int main (int argc, char * argv[]) {
   pthread_t threads[NTHREADS];
   struct arg_struct args[NTHREADS];
   void * status;
@@ -25,7 +25,7 @@ int main (int argc, void * argv[]) {
 
   for (unsigned i = 0 ; i < NTHREADS ; i++) {
     args[i].n = atoi(argv[1]);
-    args[i].c = argv[i+2];
+    args[i].c = argv[i+2][0];
     rc = pthread_create(&threads[i], NULL, printChar, (void *)&args[i]);
   }
 
