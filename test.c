@@ -15,7 +15,7 @@ int main (int argc, void * argv[]) {
 
   for (unsigned i = 0 ; i < 5 ; i++) {
     t[i] = i;
-    rc = pthread_create(&thread[i], NULL, SayHi, &t[i]);
+    rc = pthread_create(&thread[i], NULL, SayHi, (void *)&t[i]);
     if(rc < 0){
       printf("Fallo en pthread_create %d", i);
       exit(0);
