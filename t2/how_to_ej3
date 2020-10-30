@@ -1,0 +1,4 @@
+Hay que implementar peterson dos a dos:
+ - Peterson entre los rios
+ - Peterson entre las presas
+ - Por ultimo, Peterson presa_ganadora vs rio_ganador
