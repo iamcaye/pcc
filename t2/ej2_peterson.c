@@ -5,11 +5,14 @@
 
 #define TAM 100
 int arr[TAM] = {[0 ... TAM-1] = -1};
+int turno;
 
 void * cons(void * arg){
   int n = *(int *)arg, i = 0, j = 0;
   while(i < n){
-    while(arr[j]==-1);
+    while(turno == 0){};
+    turno = 0;
+    while(arr[j]==-1){};
 
     printf("Consumido arr[%d] = %d\n", j, arr[j]);
     arr[j]= -1;
@@ -24,6 +27,9 @@ void * cons(void * arg){
 void * prod(void * arg){
   int n = *(int *)arg, pos=0, i = 0;
   while(i < n){
+    while(turno == 1){};
+    turno = 1;
+
     if(arr[pos] == -1){
       arr[pos] = i;
       printf("producir %d\n", i);
