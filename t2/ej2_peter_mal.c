@@ -6,45 +6,55 @@
 #define TAM 100
 int arr[TAM] = {[0 ... TAM-1] = -1};
 int turno;
+int f[2]={0,0};
 
 void * cons(void * arg){
   int n = *(int *)arg, i = 0, j = 0;
-  while(i < n){
-    while(turno == 0){};
-    turno = 0;
-    while(arr[j]==-1){};
-
-    printf("Consumido arr[%d] = %d\n", j, arr[j]);
-    arr[j]= -1;
-    j++;
-    if(j == TAM){
-      j = 0;
+  while(1){
+    f[0] = 1;
+    turno = 1;
+    while(f[1] && turno == 1)
+      ;
+    while(i < n){
+      while(arr[j]==-1){};
+      printf("Consumido arr[%d] = %d\n", j, arr[j]);
+      arr[j]= -1;
+      j++;
+      if(j == TAM){
+        j = 0;
+      }
+      i++;
     }
-    i++;
+    f[0] = 0;
   }
 }
 
 void * prod(void * arg){
   int n = *(int *)arg, pos=0, i = 0;
-  while(i < n){
-    while(turno == 1){};
-    turno = 1;
-
-    if(arr[pos] == -1){
-      arr[pos] = i;
-      printf("producir %d\n", i);
-  
-    }else{
-      while(arr[pos] != -1){
-        pos++;
-        if(pos == TAM){
-          pos = 0;
+  while(1){
+    f[1] = 1;
+    turno = 0;
+    while(f[0] && turno == 0)
+      ;
+    while(i < n){
+      if(arr[pos] == -1){
+        arr[pos] = i;
+        printf("producir %d\n", i);
+    
+      }else{
+        while(arr[pos] != -1){
+          pos++;
+          if(pos == TAM){
+            pos = 0;
+          }
         }
+        arr[pos] = i;
+        printf("%d producido en %d\n", i, pos);
       }
-      arr[pos] = i;
-      printf("%d producido en %d\n", i, pos);
+      i++;
     }
-    i++;
+    f[1] = 0;
+
   }
 }
 
