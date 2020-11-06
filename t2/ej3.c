@@ -4,10 +4,10 @@
 #include <string.h>
 
 long nagua = 0;
-int f1[2] = {0,0},f2[2] = {0,0};
-int t1 = 0, t2 = 0, cant1 = -1, cant2 = -1;
+int f1[2] = {0,0}, f2[2] = {0,0}, f3[2] = {0,0};
+int t1 = 0, t2 = 0, t3 = 0, cant1 = -1, cant2 = -1;
 
-void * rio (void * arg){
+void * rio1 (void * arg){
   while(1 && cant1 != 0){
     f1[0] = 1;
     t1 = 1;
@@ -27,15 +27,36 @@ void * rio (void * arg){
   }
 } 
 
-void * presa (void * arg){
+void * rio2 (void * arg){
+  while(1 && cant1 != 0){
+    f1[0] = 1;
+    t1 = 1;
+    while(t1 == 1 && f1[1])
+      ;
+    f2[1] = 1;
+    t2 = 0;
+    while(t2 == 0 && f2[0])
+      ;
+    nagua += 1000;
+    cant1--;
+    printf("Sube el agua: %ldL \n", nagua);
+    fflush(stdout);
+
+    f1[0] = 0;
+    f2[1] = 0;
+  }
+} 
+
+
+void * presa1 (void * arg){
   while(1 && cant2 != 0){
     f1[1] = 1;
     t1 = 0;
     while(t1 == 0 && f1[0])
       ;
-    f2[1] = 1;
-    t2 = 0;
-    while(t2 == 0 && f2[0])
+    f3[1] = 1;
+    t3 = 0;
+    while(t3 == 0 && f3[0])
       ;
 
     cant2--;
@@ -49,9 +70,36 @@ void * presa (void * arg){
     } 
 
     f1[1] = 0;
-    f2[1] = 0;
+    f3[1] = 0;
   }
 } 
+
+void * presa2 (void * arg){
+  while(1 && cant2 != 0){
+    f1[1] = 1;
+    t1 = 0;
+    while(t1 == 0 && f1[0])
+      ;
+    f3[0] = 1;
+    t3 = 1;
+    while(t3 == 1 && f3[1])
+      ;
+
+    cant2--;
+    if(nagua > 0){
+      nagua -= 1000;
+      printf("Baja el agua: %ldL \n", nagua);
+      fflush(stdout);
+    }else{
+      printf("Presa vacia\n");
+      fflush(stdout);
+    } 
+
+    f1[1] = 0;
+    f3[0] = 0;
+  }
+} 
+
 
 int main (int argc, char *argv[]) {
   pthread_t threads[4];
@@ -62,22 +110,22 @@ int main (int argc, char *argv[]) {
     cant2 =  atoi(argv[1]);
   }
 
-  rc = pthread_create(&threads[0], NULL, rio, (void *)&t[0]);
+  rc = pthread_create(&threads[0], NULL, rio1, (void *)&t[0]);
   if(rc != 0){
     perror("fallo en pthread_create 0");
     exit(-1);
   }
-  rc = pthread_create(&threads[1], NULL, rio, (void *)&t[1]);
+  rc = pthread_create(&threads[1], NULL, rio2, (void *)&t[1]);
   if(rc != 0){
     perror("fallo en pthread_create 1");
     exit(-1);
   }
-  rc = pthread_create(&threads[2], NULL, presa, (void *)&t[2]);
+  rc = pthread_create(&threads[2], NULL, presa1, (void *)&t[2]);
   if(rc != 0){
     perror("fallo en pthread_create 2");
     exit(-1);
   }
-  rc = pthread_create(&threads[3], NULL, presa, (void *)&t[3]);
+  rc = pthread_create(&threads[3], NULL, presa2, (void *)&t[3]);
   if(rc != 0){
     perror("fallo en pthread_create 3");
     exit(-1);
