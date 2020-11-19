@@ -3,11 +3,6 @@
 #include <pthread.h>
 #include <semaphore.h>
 
-/*
- *  TODO:
- *  - Quitar espera activa y solo usar semafoross
- */
-
 #define TAM 1000
 int arr[TAM] = {[0 ... TAM-1] = -1};
 int turno = 0;

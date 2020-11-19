@@ -3,22 +3,24 @@
 #include <semaphore.h>
 #include <pthread.h>
 
-int arr[100]= {[0 ... 99] = 0};
-sem_t s_c[3], s_cola;
+int arr[100][2] = {[0 ... 99] = {-1, -1}};
+sem_t s_c[3];
 
 void * colocador(void * arg){
   int c = *(int *)arg, cont = 0;
   while(1){
-    sem_wait(&s_cola);
-    while(arr[cont] != 0){
-      cont++;
-      if(cont == c){
-        cont = 0;
+    for(unsigned j = 0 ; j < 3 ; j++) {
+      while(arr[cont][1] != -1){
+        cont++;
+        if(cont == 100){
+          cont = 0;
+        }
       }
+      arr[cont][0] = rand() % 11;
+      arr[cont][1] = j;
+      printf("ID Producto %d = %d\n", arr[cont][1], arr[cont][0]);
+      sem_post(&s_c[j]);
     }
-    arr[cont] = (rand() % 2) +1;
-    printf("ID Producto %d\n", arr[cont]);
-    sem_post(&s_c[arr[cont]]);
   }
 }
 
@@ -27,15 +29,14 @@ void * robot (void * arg){
   while(1){
     printf("%d intenta recoger\n", t);
     sem_wait(&s_c[t]);
-    while(arr[n] != t){
+    while(arr[n][1] != t){
       n++;
       if(n >= 100){
         n = 0;
       }
     }
-    printf("Robot %d retira %d\n", t, arr[n]);
-    arr[n] = 0;
-    sem_post(&s_cola);
+    printf("Robot %d retira %d\n", t, arr[n][0]);
+    arr[n][1] = -1;
   }
 }
 
@@ -51,7 +52,7 @@ int main (int argc, char *argv[]){
   if(argc > 1) {
     c = atoi(argv[1]);
   }
-  sem_init(&s_cola, 0, c);
+  
 
 
   for(unsigned i = 1 ; i < 4 ; i++){
