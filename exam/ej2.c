@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include <semaphore.h>
+#include <unistd.h>
 #define TAM 1000
 
 sem_t s_cola, s_hambre, s_sed, mutex;
@@ -10,21 +11,21 @@ int arr[TAM] = {[0 ... TAM-1] = 0};
 void * puesto(void * arg){
   int n_pers = *(int *)arg, n = 0;
   while(1){
+    n = 0;
     sem_wait(&s_cola);
-    while((n < n_pers) && arr[n] != 1){
+    while((n < n_pers) && arr[n] == 0){
       n++;
     }
-    if(n < n_pers){
+    if(arr[n] == 1){
       sem_post(&s_hambre);
-      printf("Puesto: alimento para superviviente\n");
+      printf("Puesto: alimento para superviviente %d\n", arr[n]);
       fflush(stdout);
       sem_wait(&mutex);
       arr[n] == 0;
       sem_post(&mutex);
     }else{
-      n = 0;
       sem_post(&s_sed);
-      printf("Puesto: agua para superviviente\n");
+      printf("Puesto: agua para superviviente %d\n", arr[n]);
       fflush(stdout);
     }
   }
@@ -34,9 +35,10 @@ void * persona (void * arg){
   int n = *(int *)arg, per = n % 2;
   while(1){
     sem_post(&s_cola);
-  printf("per ============================== %d\n", n);
-      fflush(stdout);
+    printf("per ============================== %d\n", per);
+    fflush(stdout);
     if(per == 0){
+      sleep(3);
       printf("Superviviente %d tiene HAMBRE\n", n);
       fflush(stdout);
       sem_wait(&mutex);
