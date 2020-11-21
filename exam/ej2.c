@@ -6,26 +6,26 @@
 #define TAM 1000
 
 sem_t s_cola, s_hambre, s_sed, mutex;
-int arr[TAM] = {[0 ... TAM-1] = 0};
+int n_hambre = 0, n_sed = 0;
 
 void * puesto(void * arg){
   int n_pers = *(int *)arg, n = 0;
   while(1){
     n = 0;
     sem_wait(&s_cola);
-    while((n < n_pers) && arr[n] == 0){
-      n++;
-    }
-    if(arr[n] == 1){
+    if(n_hambre > 0){
       sem_post(&s_hambre);
-      printf("Puesto: alimento para superviviente %d\n", arr[n]);
+      printf("Puesto: alimento para superviviente\n");
       fflush(stdout);
       sem_wait(&mutex);
-      arr[n] == 0;
+      n_hambre--;
       sem_post(&mutex);
-    }else{
+    }else if(n_sed > 0){
+      sem_wait(&mutex);
+      n_sed--;
+      sem_post(&mutex);
       sem_post(&s_sed);
-      printf("Puesto: agua para superviviente %d\n", arr[n]);
+      printf("Puesto: agua para superviviente\n");
       fflush(stdout);
     }
   }
@@ -35,21 +35,25 @@ void * persona (void * arg){
   int n = *(int *)arg, per = n % 2;
   while(1){
     sem_post(&s_cola);
-    printf("per ============================== %d\n", per);
     fflush(stdout);
     if(per == 0){
-      sleep(3);
       printf("Superviviente %d tiene HAMBRE\n", n);
       fflush(stdout);
       sem_wait(&mutex);
-      arr[n] = 1;
+      n_hambre++;
       sem_post(&mutex);
       sem_wait(&s_hambre);
+      printf("Superviviente %d recibe COMIDA\n", n);
     }else{
+      sem_wait(&mutex);
+      n_sed++;
+      sem_post(&mutex);
       printf("Superviviente %d tiene SED\n", n);
       fflush(stdout);
       sem_wait(&s_sed);
+      printf("Superviviente %d recibe AGUA\n", n);
     }
+    sleep(3);
   }
 }
 
