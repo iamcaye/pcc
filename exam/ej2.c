@@ -85,7 +85,7 @@ int main (int argc, void * argv[]){
     }
   }
 
-  for (long h = 0 ; h < 2 ; h++) {
+  for (long h = 0 ; h < N ; h++) {
     rc = pthread_join(threads[h], &status);
     if (rc != 0) {
       printf("ERROR pthread_join() is %d\n", rc);
