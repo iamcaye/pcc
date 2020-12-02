@@ -25,8 +25,8 @@ void * persona(void *arg){
     while(piso_d != piso){
       pthread_cond_wait(&s_piso, &mutex);
     }
-    printf("Persona %d se ha bajado al ascensor\tTotal: %d\n", n, n_pers);
     n_pers--;
+    printf("Persona %d se ha bajado al ascensor\tTotal: %d\n", n, n_pers);
 
     pthread_mutex_unlock(&mutex);
     sleep(1);
