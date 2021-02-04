@@ -18,7 +18,6 @@ void * coche (void * arg){
 		while(n_pers < C){
 			pthread_cond_wait(&c_coche, &mutex);
 			if(n_bussiness > 0){
-				n_bussiness--;
 				pthread_cond_signal(&c_bussiness);
 			}else{
 				pthread_cond_signal(&c_normal);
@@ -26,7 +25,7 @@ void * coche (void * arg){
 		}
 		pthread_mutex_unlock(&mutex);
 		printf("El coche sale a pista\n");
-		sleep(5);
+		sleep(2);
 		printf("El coche termina\n");
 		pthread_cond_broadcast(&c_salida);
 	}
@@ -39,13 +38,13 @@ void * p_normal (void * arg) {
 		while(n_pers >= C || n_bussiness > 0){
 			pthread_cond_wait(&c_normal, &mutex);
 		}
-		printf("El pasajero bussiness %d se ha subido al coche\n", id);
 		n_pers++;
+		printf("El pasajero normal %d se ha subido al coche. n_pers = %d\n", id, n_pers);
 		pthread_cond_signal(&c_coche);
 		pthread_cond_wait(&c_salida, &mutex);
 		pthread_mutex_unlock(&mutex);
 		printf("Pasajero normal %d sale del coche\n", id);
-		sleep(3);
+		sleep(5);
 	}
 }
 
@@ -57,13 +56,14 @@ void * p_bussiness (void * arg) {
 		while(n_pers >= C){
 			pthread_cond_wait(&c_bussiness, &mutex);
 		}
-		printf("El pasajero bussiness %d se ha subido al coche\n", id);
 		n_pers++;
+		n_bussiness--;
+		printf("El pasajero bussiness %d se ha subido al coche. n_pers = %d\n", id, n_pers);
 		pthread_cond_signal(&c_coche);
 		pthread_cond_wait(&c_salida, &mutex);
 		pthread_mutex_unlock(&mutex);
 		printf("Pasajero bussiness %d sale del coche\n", id);
-		sleep(3);
+		sleep(5);
 	}
 }
 
